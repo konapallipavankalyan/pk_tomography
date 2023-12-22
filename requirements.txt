@@ -4,3 +4,6 @@ scipy
 sqtdiat
 qiskit
 qutip
+scikit-image
+pandas
+plotly
