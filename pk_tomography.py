@@ -5,6 +5,7 @@ import sqtdiat.qops as sq
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 import scipy as sc
+from scipy.linalg import sqrtm
 
 # N_all = [1359,61,693,687,63,1695,1004,806,791,854,69,922,713,991,932,80]
 N_all = [1359, 61, 693, 886, 63, 1695, 1004, 894, 791, 854, 69, 809, 645, 971, 902, 76]
@@ -35,19 +36,14 @@ def sqrt_dens_mat(dens_mat):
 #     print(iden)
     return eig_vecs.T @ iden @ np.linalg.inv(eig_vecs.T)
 
-def fidelity(rho1, rho2):
-    if type(rho1) != np.array:
-        rho1 = np.array(rho1)
-    if type(rho2) != np.array:
-        rho2 = np.array(rho2)
-    if rho1.shape == rho2.shape:
-        if nxn_valid_quantum(rho1) and nxn_valid_quantum(rho2):
-            sqrt_rho1 = sc.linalg.sqrtm(rho1)
-            val = sqrt_rho1 @ rho2 @ sqrt_rho1
-            if np.imag(trace(val)) < 10e-4:
-                return np.round(np.real((trace(sc.linalg.sqrtm(val)))**2), 7)
-    else:
-        raise ValueError(f"Given density matrices are not of same dimension {rho1.shape}, {rho2.shape}")
+
+
+def fidelity(rho, expected_state):
+    sqrt_rho = sqrtm(rho)
+    sqrt_expected_state = sqrtm(expected_state)
+    inner_product = np.trace(np.matmul(np.matmul(sqrt_rho, sqrt_expected_state), sqrt_rho))
+    fid = np.abs(inner_product) ** 2
+    return fid
 
 def density_mat_from_state_vec(state_vec):
 	if type(state_vec) != np.array:
